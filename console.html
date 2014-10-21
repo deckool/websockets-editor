@@ -1,0 +1,504 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+
+
+  <script src="mark/marked.js"></script>
+  <script src="mark/highlight.pack.js"></script>
+  <script src="mark/codemirror/lib/codemirror.js"></script>
+  <script src="mark/codemirror/xml/xml.js"></script>
+  <script src="mark/codemirror/markdown/markdown.js"></script>
+  <script src="mark/codemirror/gfm/gfm.js"></script>
+  <script src="mark/codemirror/javascript/javascript.js"></script>
+  <script src="mark/rawinflate.js"></script>
+  <script src="mark/rawdeflate.js"></script>
+  <link rel="stylesheet" href="mark/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="mark/default.css">
+
+<!-- Latest compiled and minified CSS -->
+
+
+        <title>WebSockets Console</title>
+        <!--<link rel="stylesheet" type="text/css" href="style.css" />-->
+
+
+  <style>
+input[type="checkbox"] {
+  display:none;
+}
+::-webkit-input-placeholder {
+   color: rgba(255,255,255,0.7);
+}
+
+:-moz-placeholder { /* Firefox 18- */
+   color: rgba(255,255,255,0.7);
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+   color: rgba(255,255,255,0.7);
+}
+
+:-ms-input-placeholder {  
+   color: rgba(255,255,255,0.7);
+}
+a {
+  text-decoration:none;
+  font:10px monospace;
+  color:red;
+}
+.check {
+  width: 22px;
+  height:22px;
+  background: #fff;
+  margin-right:5px;
+  float:left;
+  border-radius: 50%;
+  position: relative;
+}
+.check label {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 100px;
+  -webkit-transition: all .3s ease;
+  -moz-transition: all .3s ease;
+  -o-transition: all .3s ease;
+  -ms-transition: all .3s ease;
+  transition: all .3s ease;
+  cursor: pointer;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  z-index: 1;
+  background: #333;
+  -webkit-box-shadow:inset 0px 1px 3px rgba(0,0,0,0.5);
+  -moz-box-shadow:inset 0px 1px 3px rgba(0,0,0,0.5);
+  box-shadow:inset 0px 1px 3px rgba(0,0,0,0.5);
+}
+.check input[type=checkbox]:checked + label {
+  background:url('http://deckool.github.io/vanilinated-todo/checkbox.png');
+}
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #909;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #909;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #909;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+   color:    #909;
+}
+input:focus {
+outline: none;
+background: #e74c3c;
+color:#fff;
+}
+input {
+min-width: 150px;
+display:inline-block;
+text-align: center;
+outline: none;
+background-color: #1abc9c;
+border: 0px solid rgba(255,255,255,0.2);
+color: #0066ff;
+margin: 5px 2px !important;
+font-size: 18px;
+font-weight: bold;
+padding:5px;
+}
+button {
+min-width: 150px;
+display:inline-block;
+text-align: center;
+font-size: 18px;
+outline: none;
+background-color: #2ecc71;
+border: 0px solid rgba(255,255,255,0.2);
+margin: 5px 2px;
+color: #fff;
+z-index: 1000;
+font-weight: bold;
+padding:5px;
+}
+body {padding:0;margin:0;}
+header {background:url(http://organicorange.ro/sparkles/footer.png);position:absolute;z-index:9990;width:100%;color:#fff;}
+.myButton {display:block;z-index:9999;position:absolute;left:calc(50% - 21px);}
+.myButton1 {display:block;z-index:9999;position:absolute;top:42px;left:calc(50% - 21px);}
+.form1 {max-width:500px;margin-left:10px;}
+.form2 {max-width:500px;margin-left:10px;}
+div.class, div.class2 {
+  display:inline-block;
+}
+
+.CodeMirror pre.CodeMirror-cursor {
+    border-left:1px solid red;
+    visibility: visible !important;
+}
+    .CodeMirror pre{
+      line-height: 14px;
+    }
+    #in, .CodeMirror{
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 50%;
+      overflow: auto;
+      font-size: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .CodeMirror-scroll {
+      height: 100%;
+      min-height: 100%;
+    }
+
+    #out{
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 50%;
+      bottom: 0;
+      overflow: auto;
+      padding: 10px;
+      padding-left: 20px;
+      color: #444;
+      font-family:Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman', serif;
+      font-size: 16px;
+      line-height: 1.5em
+    }
+
+    @media screen and (max-width: 1024px) {
+      #in {
+        display: none;
+      }
+      #out {
+        left: 0;
+        padding-left: 10px;
+      }
+    }
+
+    .view #in {
+      display: none;
+    }
+    .view #out {
+      left: 0;
+      padding-left: 10px;
+    }
+
+    a{ color: #0645ad; text-decoration:none;}
+    a:visited{ color: #0b0080; }
+    a:hover{ color: #06e; }
+    a:active{ color:#faa700; }
+    a:focus{ outline: thin dotted; }
+    a:hover, a:active{ outline: 0; }
+
+    p{margin:1em 0;}
+
+    img{max-width:100%;}
+
+    h1,h2,h3,h4,h5,h6{font-weight:normal;color:#111;line-height:1em;}
+    h4,h5,h6{ font-weight: bold; }
+    h1{ font-size:2.5em; }
+    h2{ font-size:2em; border-bottom:1px solid silver; padding-bottom: 5px; }
+    h3{ font-size:1.5em; }
+    h4{ font-size:1.2em; }
+    h5{ font-size:1em; }
+    h6{ font-size:0.9em; }
+
+    blockquote{color:#666666;margin:0;padding-left: 3em;border-left: 0.5em #EEE solid;}
+    hr { display: block; height: 2px; border: 0; border-top: 1px solid #aaa;border-bottom: 1px solid #eee; margin: 1em 0; padding: 0; }
+
+    pre, code{
+      color: #000;
+      font-family: monospace;
+      font-size: 0.88em;
+      border-radius:3px;
+      background-color: #F8F8F8;
+      border: 1px solid #CCC;
+    }
+    pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; padding: 5px;}
+    pre code { border: 0px !important; background: transparent !important; line-height: 1.3em; }
+    code { padding: 0 3px 0 3px; }
+    sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+    sup { top: -0.5em; }
+    sub { bottom: -0.25em; }
+    ul, ol { margin: 1em 0; padding: 0 0 0 2em; }
+    li p:last-child { margin:0 }
+    dd { margin: 0 0 0 2em; }
+    img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+    table { border-collapse: collapse; border-spacing: 0; }
+    td, th { vertical-align: top; padding: 4px 10px; border: 1px solid #bbb; }
+    tr:nth-child(even) td, tr:nth-child(even) th { background: #eee; }
+
+  </style>
+
+
+        <script type="text/javascript"
+            src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="console.js"></script>
+
+    </head>
+    <body>
+<!--        <div>
+            <form id="login">
+                <code>URI: </code><input type="text" size="64" id="uri"
+                        value="ws://localhost:8000/console/discountC" />
+                <input type="submit" style="display: none" />
+            </form>
+            <div id="console" style="display: none">
+                <div id="console-output"></div>
+                <form id="console-input">
+                    <code>$ </code><input type="text" size="64" id="line" />
+                    <input type="submit" style="display: none" />
+                </form>
+            </div>
+
+        </div>-->
+<header style="display:none;">welcome ,here, the valuable infomrations are stored, as they remembered by editor
+
+
+
+
+<form class="form-inline" role="form">
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-addon">Author email</div>
+      <input class="form-control" id="Authors" type="email" placeholder="Email 1, Email 2">
+    </div>
+  </div>
+</form>
+
+</br>
+
+<form class="form-inline" role="form">
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-addon">Categories</div>
+      <input class="form-control" id="Categories" type="text" placeholder="Cat 1, Cat 2">
+    </div>
+  </div>
+</form>
+
+</br>
+
+<form class="form-inline" role="form">
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-addon">Tags</div>
+      <input class="form-control" id="Tags" type="text" placeholder="Tag 1, Tag 2">
+    </div>
+  </div>
+</form>
+
+</br>
+
+<form class="form-inline" role="form">
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-addon">Date</div>
+      <input class="form-control" id="artDate" type="text" placeholder="Date">
+    </div>
+  </div>
+</form>
+</br>
+<button id="myButton2" type="submit" class="btn btn-primary">Submit</button>
+</br>
+      <div class="check">
+        <input type="checkbox" id="facebook">
+        <label for="facebook"></label>
+        facebook
+      </div>
+</br>
+
+</header>
+<button class="myButton" id="myButton" title="title"><img width="42" height="42" src="cdn/ic_arrow_drop_down_circle_24px.svg" alt=""></button>
+<button class="myButton1" title="title"><img width="42" height="42" src="cdn/ic_arrow_drop_down_circle_24px.svg" alt=""></button>
+
+  <div id="in"><form><textarea id="code"> *
+</textarea></form></div>
+  <div id="out"></div>
+
+<script>
+</script>
+
+
+<script type="application/javascript">
+
+function appendOutput(cls, text) {
+    $('#console-output').append('<pre class="' + cls + '">' + text + '</pre>');
+    $('#line').focus();
+}
+
+$(document).ready(function () {
+    var ws;
+
+    $('#uri').focus();
+
+        var uri = "ws://localhost:8000/console"
+        //var uri = $('#uri').val();
+        $('#login').css('display', 'none');
+        $('#console').css('display', 'block');
+
+        ws = new WebSocket(uri);
+        appendOutput('stderr', 'Opening WebSockets connection...\n');
+
+        ws.onerror = function(event) {
+            console.log(event.data);
+            appendOutput('stderr', 'WebSockets error: ' + event.data + '\n');
+        };
+
+        ws.onopen = function() {
+            appendOutput('stderr', 'WebSockets connection successful!\n');
+        };
+
+        ws.onclose = function() {
+            appendOutput('stderr', 'WebSockets connection closed.\n');
+        };
+
+        ws.onmessage = function(event) {
+            console.log(event.data);
+            appendOutput('stdout', event.data);
+            document.getElementById('out').innerHTML = event.data;
+        };
+
+
+    var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+    navigator.saveBlob = navigator.saveBlob || navigator.msSaveBlob || navigator.mozSaveBlob || navigator.webkitSaveBlob;
+    window.saveAs = window.saveAs || window.webkitSaveAs || window.mozSaveAs || window.msSaveAs;
+
+    // Because highlight.js is a bit awkward at times
+    var languageOverrides = {
+      js: 'javascript',
+      html: 'xml'
+    }
+
+    marked.setOptions({
+      highlight: function(code, lang){
+        if(languageOverrides[lang]) lang = languageOverrides[lang];
+        return hljs.LANGUAGES[lang] ? hljs.highlight(lang, code).value : code;
+      }
+    });
+
+    function update(e){
+      var val = e.getValue();
+
+      setOutput(val);
+
+      clearTimeout(hashto);
+      hashto = setTimeout(updateHash, 1000);
+    }
+
+    function setOutput(val){
+        if(ws.readyState == 1){
+            ws.send(val);
+          }
+        else{
+            ws.onopen = function(e){
+                ws.send(val);
+            }
+        }
+     // ws.send(val);
+      //document.getElementById('out').innerHTML = marked(val);
+    }
+
+
+    var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+      mode: 'gfm',
+      lineNumbers: true,
+      matchBrackets: true,
+      lineWrapping: true,
+      theme: 'default',
+      onChange: update
+    });
+
+function splitAt(a) {
+  var partsOfStr = a.split(',');
+  return partsOfStr;
+}
+
+$('#myButton, #myButton2').click(function() {
+  var x = document.getElementById('facebook').checked;
+  var person = {
+    authors: splitAt(document.getElementById('Authors').value),
+    categories:splitAt(document.getElementById('Categories').value),
+    tags:splitAt(document.getElementById('Tags').value),
+    date: document.getElementById('artDate').value,
+    faceBook: x
+  };
+  person = JSON.stringify(person);
+  setOutput(person + editor.getValue());
+    $('header').toggle('fast', function() {
+      // Animation complete.
+    });
+});
+
+    document.addEventListener('drop', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+
+      var theFile = e.dataTransfer.files[0];
+      var theReader = new FileReader();
+      theReader.onload = function(e){
+        editor.setValue(e.target.result);
+      };
+
+      theReader.readAsText(theFile);
+    }, false);
+
+    function save(){
+      var code = editor.getValue();
+      var blob = new Blob([code], { type: 'text/plain' });
+      saveBlob(blob);
+    }
+
+    function saveBlob(blob){
+      var name = "untitled.md";
+      if(window.saveAs){
+        window.saveAs(blob, name);
+      }else if(navigator.saveBlob){
+        navigator.saveBlob(blob, name);
+      }else{
+        url = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+        link.setAttribute("href",url);
+        link.setAttribute("download",name);
+        var event = document.createEvent('MouseEvents');
+        event.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+        link.dispatchEvent(event);
+      }
+    }
+
+    var hashto;
+
+    function updateHash(){
+      window.location.hash = btoa(RawDeflate.deflate(unescape(encodeURIComponent(editor.getValue()))))
+    }
+
+    if(window.location.hash){
+      var h = window.location.hash.replace(/^#/, '');
+      if(h.slice(0,5) == 'view:'){
+        setOutput(decodeURIComponent(escape(RawDeflate.inflate(atob(h.slice(5))))));
+        console.log('1 if');
+        document.body.className = 'view';
+      }else{
+        editor.setValue(decodeURIComponent(escape(RawDeflate.inflate(atob(h)))))
+        console.log('else');
+        update(editor);
+        editor.focus();
+      }
+    }else{
+      console.log('no hash');
+      update(editor);
+      editor.focus();
+    }
+
+
+});
+</script>
+
+    </body>
+</html>
