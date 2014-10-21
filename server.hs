@@ -102,7 +102,7 @@ wordsWhen p s =  case dropWhile p s of
 
 --------------------------------------------------------------------------------
 main :: IO ()
-main = Snap.httpServe config app
+main = Snap.httpServe (Snap.setPort 8003 config) app
   where
     config =
         Snap.setErrorLog  Snap.ConfigNoLog $
