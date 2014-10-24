@@ -37,17 +37,19 @@ console = do
 
 
 --------------------------------------------------------------------------------
-consoleApp :: String -> WS.ServerApp
+--consoleApp :: String -> WS.ServerApp
 consoleApp shell pending = do
-    (stdin, stdout, stderr, phandle) <- Process.runInteractiveCommand shell
+--    (stdin, stdout, stderr, phandle) <- Process.runInteractiveCommand shell
     conn                             <- WS.acceptRequest pending
 
-    _ <- copyHandleToConn stdout conn
-    _ <- copyHandleToConn stderr conn
-    _ <- copyConnToHandle conn stdin
+--    _ <- copyHandleToConn stdout conn
+--    _ <- copyHandleToConn stderr conn
+--    _ <- copyConnToHandle conn stdin
 
-    exitCode <- Process.waitForProcess phandle
-    putStrLn $ "consoleApp ended: " ++ show exitCode
+--    exitCode <- Process.waitForProcess phandle
+--    putStrLn $ "consoleApp ended: " ++ show exitCode
+
+    WS.sendTextData conn $ BC.pack shell
 
 
 --------------------------------------------------------------------------------
