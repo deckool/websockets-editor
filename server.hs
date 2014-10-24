@@ -21,6 +21,7 @@ import qualified System.Process          as Process
 
 import           Text.Discount
 import qualified Data.Text as T
+import Control.Monad.IO.Class
 
 
 --------------------------------------------------------------------------------
@@ -41,19 +42,21 @@ console :: Snap ()
 console = do
     --Just shell <- Snap.getParam "shell"
     WS.runWebSocketsSnap $ consoleApp "discountC"
+    --Snap.writeBS "hi"
 
 
 --------------------------------------------------------------------------------
 consoleApp :: String -> WS.ServerApp
 consoleApp shell pending = do
+
     (stdin, stdout, stderr, phandle) <- Process.runInteractiveCommand shell
 
-    let z                                = WS.pendingRequest pending
+{--    let z                                = WS.pendingRequest pending
     let ps = WS.Request z "what?"
     print $ show ps
     print $ WS.requestPath z
     print $ WS.requestHeaders z
-    print $ WS.requestSecure z
+    print $ WS.requestSecure z --}
     conn                             <- WS.acceptRequest pending
 
     _ <- forkIO $ copyHandleToConn stdout conn
@@ -68,6 +71,7 @@ consoleApp shell pending = do
 copyHandleToConn :: IO.Handle -> WS.Connection -> IO ()
 copyHandleToConn h c = do
     bs <- B.hGetSome h 1024
+    print bs
     unless (B.null bs) $ do
         --putStrLn $ "> " ++ show bs
         WS.sendTextData c bs
@@ -80,11 +84,10 @@ copyConnToHandle c h = flip finally (IO.hClose h) $ forever $ do
     bs <- WS.receiveData c
     let getInfo = wordsWhen (=='*') (BC.unpack bs)
     let headInfo = unlines $ take 1 getInfo
-    --print $ length headInfo
+    print headInfo
     let noHeader = length headInfo
     let send = drop noHeader $ BC.unpack bs
-    --print bs
-    --print send
+    print send
     let mdParsed = parseMarkdown compatOptions $ BC.pack send
     --print headInfo
     --print send

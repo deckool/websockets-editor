@@ -338,13 +338,14 @@ $(document).ready(function () {
 
     $('#uri').focus();
 
-        var uri = "ws://localhost:8000/console"
+        var uri = "ws://localhost:8003/console"
         //var uri = $('#uri').val();
         $('#login').css('display', 'none');
         $('#console').css('display', 'block');
 
         ws = new WebSocket(uri);
         appendOutput('stderr', 'Opening WebSockets connection...\n');
+        console.log(ws);
 
         ws.onerror = function(event) {
             console.log(event.data);
@@ -353,6 +354,7 @@ $(document).ready(function () {
 
         ws.onopen = function() {
             appendOutput('stderr', 'WebSockets connection successful!\n');
+            console.log('stdrr');
         };
 
         ws.onclose = function() {
@@ -364,7 +366,7 @@ $(document).ready(function () {
             appendOutput('stdout', event.data);
             document.getElementById('out').innerHTML = event.data;
         };
-
+   console.log('wtf');
 
     var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
     navigator.saveBlob = navigator.saveBlob || navigator.msSaveBlob || navigator.mozSaveBlob || navigator.webkitSaveBlob;
@@ -393,12 +395,15 @@ $(document).ready(function () {
     }
 
     function setOutput(val){
+      console.log(val + 'send to websocket');
         if(ws.readyState == 1){
             ws.send(val);
+            console.log('send');
           }
         else{
             ws.onopen = function(e){
                 ws.send(val);
+                console.log('second open');
             }
         }
      // ws.send(val);
@@ -475,18 +480,23 @@ $('#myButton, #myButton2').click(function() {
     var hashto;
 
     function updateHash(){
-      window.location.hash = btoa(RawDeflate.deflate(unescape(encodeURIComponent(editor.getValue()))))
+      var z = btoa(RawDeflate.deflate(unescape(encodeURIComponent(editor.getValue()))))
+      console.log(z + '------------------------------------');
+      localStorage.setItem('favoriteflavor', z);
     }
 
-    if(window.location.hash){
-      var h = window.location.hash.replace(/^#/, '');
+if(localStorage && localStorage.getItem('favoriteflavor')) {
+  var z = localStorage.getItem('favoriteflavor');
+  var h = z.replace(/^#/, '');
+  console.log(z + 'your storage');
+
       if(h.slice(0,5) == 'view:'){
         setOutput(decodeURIComponent(escape(RawDeflate.inflate(atob(h.slice(5))))));
         console.log('1 if');
         document.body.className = 'view';
       }else{
         editor.setValue(decodeURIComponent(escape(RawDeflate.inflate(atob(h)))))
-        console.log('else');
+        console.log(editor.getValue() + 'jjjjjjj');
         update(editor);
         editor.focus();
       }
@@ -495,8 +505,6 @@ $('#myButton, #myButton2').click(function() {
       update(editor);
       editor.focus();
     }
-
-
 });
 </script>
 
