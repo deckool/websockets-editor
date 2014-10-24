@@ -37,4 +37,4 @@ app conn = do
 
 --------------------------------------------------------------------------------
 main :: IO ()
-main = withSocketsDo $ WS.runClient "localhost" 8003 "/console" app
+main = withSocketsDo $ WS.runClient "organicorange.ro" 8080 "/" app

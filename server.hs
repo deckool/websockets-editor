@@ -42,7 +42,6 @@ console :: Snap ()
 console = do
     --Just shell <- Snap.getParam "shell"
     WS.runWebSocketsSnap $ consoleApp "discountC"
-    --Snap.writeBS "hi"
 
 
 --------------------------------------------------------------------------------
