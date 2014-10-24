@@ -48,7 +48,7 @@ console = do
 --------------------------------------------------------------------------------
 consoleApp :: String -> WS.ServerApp
 consoleApp shell pending = do
-
+    print "start"
     (stdin, stdout, stderr, phandle) <- Process.runInteractiveCommand shell
 
 {--    let z                                = WS.pendingRequest pending
