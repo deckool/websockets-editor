@@ -42,9 +42,9 @@ consoleApp shell pending = do
     (stdin, stdout, stderr, phandle) <- Process.runInteractiveCommand shell
     conn                             <- WS.acceptRequest pending
 
-    _ <- forkIO $ copyHandleToConn stdout conn
-    _ <- forkIO $ copyHandleToConn stderr conn
-    _ <- forkIO $ copyConnToHandle conn stdin
+    _ <- copyHandleToConn stdout conn
+    _ <- copyHandleToConn stderr conn
+    _ <- copyConnToHandle conn stdin
 
     exitCode <- Process.waitForProcess phandle
     putStrLn $ "consoleApp ended: " ++ show exitCode
