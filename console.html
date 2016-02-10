@@ -332,7 +332,7 @@ function appendOutput(cls, text) {
     $('#console-output').append('<pre class="' + cls + '">' + text + '</pre>');
     $('#line').focus();
 }
-
+var isIt;
 $(document).ready(function () {
     var ws;
 
@@ -354,18 +354,16 @@ $(document).ready(function () {
 
         ws.onopen = function() {
             appendOutput('stderr', 'WebSockets connection successful!\n');
-            console.log('stdrr');
+            console.log('started');
+                var user = JSON.parse(localStorage.getItem('user'));
+                ws.send(user.name);
+                isIt = true;
         };
 
         ws.onclose = function() {
             appendOutput('stderr', 'WebSockets connection closed.\n');
         };
 
-        ws.onmessage = function(event) {
-            console.log(event.data);
-            appendOutput('stdout', event.data);
-            document.getElementById('out').innerHTML = event.data;
-        };
    console.log('wtf');
 
     var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
@@ -385,6 +383,24 @@ $(document).ready(function () {
       }
     });
 
+    function setOutput(val){
+      //  console.log(val + 'send to websocket');
+        /*if(ws.readyState == 1){
+            ws.send(val);
+            console.log('send');
+          }
+        else{
+            ws.onopen = function(e){
+                var user = JSON.parse(localStorage.getItem('user'));
+                ws.send(user.name);
+                isIt = true;
+                console.log('second open');
+            }
+        }*/
+     ws.send(val);
+      //document.getElementById('out').innerHTML = marked(val);
+    }
+
     function update(e){
       var val = e.getValue();
 
@@ -394,29 +410,12 @@ $(document).ready(function () {
       hashto = setTimeout(updateHash, 1000);
     }
 
-    function setOutput(val){
-      console.log(val + 'send to websocket');
-        if(ws.readyState == 1){
-            ws.send(val);
-            console.log('send');
-          }
-        else{
-            ws.onopen = function(e){
-                ws.send(val);
-                console.log('second open');
-            }
-        }
-     // ws.send(val);
-      //document.getElementById('out').innerHTML = marked(val);
-    }
-
-
     var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
       mode: 'gfm',
       lineNumbers: true,
       matchBrackets: true,
       lineWrapping: true,
-      theme: 'default',
+      theme: 'dracula',
       onChange: update
     });
 
@@ -485,10 +484,10 @@ $('#myButton, #myButton2').click(function() {
       localStorage.setItem('favoriteflavor', z);
     }
 
-if(localStorage && localStorage.getItem('favoriteflavor')) {
+function bang() {
   var z = localStorage.getItem('favoriteflavor');
   var h = z.replace(/^#/, '');
-  console.log(z + 'your storage');
+  console.log(z, 'your storage');
 
       if(h.slice(0,5) == 'view:'){
         setOutput(decodeURIComponent(escape(RawDeflate.inflate(atob(h.slice(5))))));
@@ -500,11 +499,16 @@ if(localStorage && localStorage.getItem('favoriteflavor')) {
         update(editor);
         editor.focus();
       }
-    }else{
-      console.log('no hash');
-      update(editor);
-      editor.focus();
-    }
+    };
+
+        ws.onmessage = function(event) {
+            console.log('onMEssage', event.data);
+            event.data === 'da' ? bang() : console.log('just once');
+            //bang();
+            appendOutput('stdout', event.data);
+            document.getElementById('out').innerHTML = event.data;
+        };
+
 });
 </script>
 

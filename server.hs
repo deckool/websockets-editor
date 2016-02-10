@@ -22,7 +22,7 @@ import qualified System.Process          as Process
 import           Text.Discount
 import qualified Data.Text as T
 import Control.Monad.IO.Class
-
+import System.Directory
 
 --------------------------------------------------------------------------------
 app :: Snap ()
@@ -47,8 +47,8 @@ console = do
 --------------------------------------------------------------------------------
 consoleApp :: String -> WS.ServerApp
 consoleApp shell pending = do
-    print "start"
-    (stdin, stdout, stderr, phandle) <- Process.runInteractiveCommand shell
+    path <- getCurrentDirectory
+    (Just stdin, Just stdout, Just stderr, phandle) <- Process.createProcess (Process.proc (path ++ "/discountC") []) { Process.std_in = Process.CreatePipe, Process.std_out = Process.CreatePipe, Process.std_err = Process.CreatePipe}
 
 {--    let z                                = WS.pendingRequest pending
     let ps = WS.Request z "what?"
@@ -70,7 +70,6 @@ consoleApp shell pending = do
 copyHandleToConn :: IO.Handle -> WS.Connection -> IO ()
 copyHandleToConn h c = do
     bs <- B.hGetSome h 1024
-    print bs
     unless (B.null bs) $ do
         --putStrLn $ "> " ++ show bs
         WS.sendTextData c bs
@@ -81,12 +80,16 @@ copyHandleToConn h c = do
 copyConnToHandle :: WS.Connection -> IO.Handle -> IO ()
 copyConnToHandle c h = flip finally (IO.hClose h) $ forever $ do
     bs <- WS.receiveData c
+    print bs
+    let nu = "nunu" :: T.Text
+    let da = "da" :: T.Text
+    if bs == "UserX" then WS.sendTextData c da else WS.sendTextData c nu
     let getInfo = wordsWhen (=='*') (BC.unpack bs)
     let headInfo = unlines $ take 1 getInfo
-    print headInfo
+    --print headInfo
     let noHeader = length headInfo
     let send = drop noHeader $ BC.unpack bs
-    print send
+    --print send
     let mdParsed = parseMarkdown compatOptions $ BC.pack send
     --print headInfo
     --print send
